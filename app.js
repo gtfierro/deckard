@@ -6,9 +6,6 @@ var _ = require('underscore');
 var config = require('./config');
 var moment = require('moment');
 var http = require('http');
-var bodyParser = require('body-parser');
-var multer = require('multer');
-
 
 // server setup
 var app = express();
@@ -16,20 +13,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'))
 app.use(express.static('node_modules'))
 
-// from http://expressjs.com/api.html#req.body
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use(multer()); // for parsing multipart/form-data
-
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
 app.get('/', function(req, res) {
-    res.render('index', {title: 'Decard'});
+    res.render('index', {title: 'Deckard'});
 });
+
 var server = app.listen(8000);
 console.log('Server listening on port 8000');
 
