@@ -4,6 +4,8 @@ var NavItem = ReactBootstrap.NavItem;
 var Button = ReactBootstrap.Button;
 var Panel = ReactBootstrap.Panel;
 var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+var ListGroup = ReactBootstrap.ListGroup;
+var ListGroupItem = ReactBootstrap.ListGroupItem;
 
 String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;

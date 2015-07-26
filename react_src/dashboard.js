@@ -2,7 +2,7 @@ var queryURL = 'http://localhost:8079/api/query';
 
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {page: "dashboard", query: "", error: null};
+        return {page: "dashboard", query: "", error: null, selected: null};
     },
     componentDidMount: function() {
     },
@@ -13,6 +13,7 @@ var Dashboard = React.createClass({
         run_query(query,
             function(data) {
                 console.log(data);
+                self.setState({data: data});
             },
             function(xhr,status,err) {
                 self.setState({error: xhr.responseText});
@@ -20,7 +21,12 @@ var Dashboard = React.createClass({
             }
         )
     },
+    showDetail: function(point) {
+        console.log(point);
+        this.setState({selected: point});
+    },
     render: function() {
+        var self = this;
         var error = (<span></span>);
         if (this.state.error != null) {
             error = (
@@ -29,6 +35,15 @@ var Dashboard = React.createClass({
                 </Panel>
             );
         }
+        var detail = (<span></span>);
+        if (this.state.selected != null) {
+           detail =  <PointDetail {...this.state.selected} />
+        }
+        var rows = _.map(this.state.data, function(point) {
+            return (
+                <PointRow key={point.uuid} onClick={this.showDetail.bind(this, point)} {...point} />
+            )
+        }, this);
         return (
             <div className="dashboard">
                 <div className="row">
@@ -46,6 +61,40 @@ var Dashboard = React.createClass({
                 </div>
                 {error}
                 <p>{this.state.query}</p>
+                <div className="row">
+                    <div className="col-md-8">
+                        <ListGroup>
+                            {rows}
+                        </ListGroup>
+                    </div>
+                    <div classname="col-md-4">
+                        {detail}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
+
+var PointRow = React.createClass({
+    render: function() {
+        return (
+        <ListGroupItem href="#" onClick={this.props.onClick}>
+            <div className="pointRow">
+                {this.props.Path}
+            </div>
+        </ListGroupItem>
+        );
+    }
+});
+
+var PointDetail = React.createClass({
+    render: function() {
+        return (
+            <div className="pointDetail">
+                <h2>Detail</h2>
+                <pre>{JSON.stringify(this.props, null, 2) }</pre>
             </div>
         );
     }
