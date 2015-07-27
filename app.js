@@ -26,6 +26,8 @@ var wsconns = {};
 // socket.io setup
 var io = require('socket.io')(server);
 
+console.log(config);
+
 // socket.io triggers (server <-> clients/reactjs)
 io.on('connection', function (socket) {
     console.log('New client connected!');
