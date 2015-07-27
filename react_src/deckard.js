@@ -18,15 +18,21 @@ var Deckard = React.createClass({
                 <Dashboard />
             );
             break;
+        case "config":
+            contents = (
+                <ConfigDashboard />
+            );
+            break;
         }
 
         return (
             <div className="deckard">
-            <h1>OpenBAS</h1>
+            <h1>Status Dashboard</h1>
             <div className="row">
                 <div className='col-md-2'>
                     <ReactBootstrap.Nav bsStyle='pills' stacked activeKey={this.state.page} onSelect={this.handleSelect}>
                         <ReactBootstrap.NavItem eventKey={"dashboard"}>Dashboard</ReactBootstrap.NavItem>
+                        <ReactBootstrap.NavItem eventKey={"config"}>Config</ReactBootstrap.NavItem>
                     </ReactBootstrap.Nav>
                 </div>
                 <div className='col-md-10'>
