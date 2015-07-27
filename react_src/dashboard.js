@@ -2,21 +2,21 @@ var queryURL = 'http://localhost:8079/api/query';
 
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {page: "dashboard", query: "", error: null, selected: null};
+        return {page: "dashboard", query: "", error: null, selected: null, loading: false};
     },
     componentDidMount: function() {
     },
     submitQuery: function(e) {
         var query = "select * where " + this.refs.queryInput.getValue();
-        this.setState({query: query, error: null});
+        this.setState({query: query, error: null, loading: true});
         var self = this;
         run_query(query,
             function(data) {
                 console.log(data);
-                self.setState({data: data});
+                self.setState({data: data, loading: false});
             },
             function(xhr,status,err) {
-                self.setState({error: xhr.responseText});
+                self.setState({error: xhr.responseText, loading:false});
                 console.error(xhr.responseText);
             }
         )
@@ -55,7 +55,9 @@ var Dashboard = React.createClass({
                         />
                     </div>
                     <div className="col-md-2">
-                        <Button onClick={this.submitQuery} bsStyle='success'>Query</Button>
+                        <Button onClick={this.submitQuery} disabled={this.state.loading} bsStyle='success'>
+                            {this.state.loading ? "Loading..." : "Query"}
+                        </Button>
                     </div>
                 </div>
                 {error}
