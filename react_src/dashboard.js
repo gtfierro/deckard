@@ -2,6 +2,13 @@ var Dashboard = React.createClass({
     getInitialState: function() {
         return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true};
     },
+    /*
+     * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
+     * we use the shouldComponentUpdate method to do an intelligent update. If a query has not yet been
+     * submitted, we return the default value of true. If a query *has* been submitted, then at the bottom of
+     * the submitQuery method, a timer is executed that sets the value of shouldComponentUpdate to true
+     * every second, so the entire component will only be updated then.
+     */
     shouldComponentUpdate: function(nextState, nextProps) {
         if (this.state.query == null) { return true; }
         if (this.state.willUpdate) {
@@ -55,7 +62,7 @@ var Dashboard = React.createClass({
         this.setState({socket: socket});
         setInterval(function () {
             self.setState({willUpdate: true});
-        }, 1000);
+        }, 250);
     },
     showDetail: function(point) {
         this.setState({selected: point});
