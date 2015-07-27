@@ -37,6 +37,7 @@ var Dashboard = React.createClass({
      * Each timeseries object contains the top level keys Metadata, Properties, Path, uuid and Readings
      */
     submitQuery: function(e) {
+        // fetch metadata query
         var query = "select * where " + this.refs.queryInput.getValue();
         this.setState({query: query, error: null, loading: true});
         var self = this;
@@ -54,6 +55,7 @@ var Dashboard = React.createClass({
             }
         );
 
+        // fetch most recent data point query
         var dataQuery = "select data before now as s where " + this.refs.queryInput.getValue();
         run_query(dataQuery,
             function(data) {
@@ -71,6 +73,7 @@ var Dashboard = React.createClass({
             }
         );
 
+        // set up realtime data updates
         console.log("subscribe", this.refs.queryInput.getValue());
         var subscribeQuery = this.refs.queryInput.getValue();
         var socket = io.connect();
@@ -90,6 +93,8 @@ var Dashboard = React.createClass({
     },
     render: function() {
         var self = this;
+
+        // render error if one occurs during any query
         var error = (<span></span>);
         if (this.state.error != null) {
             error = (
@@ -98,15 +103,21 @@ var Dashboard = React.createClass({
                 </Panel>
             );
         }
+
+        // set up the point detail pane on the right
         var detail = (<span></span>);
         if (this.state.selected != null) {
            detail =  <PointDetail {...this.state.selected} />
         }
+
+        // create the rows resulting from the points
+        // thresholds is built off of the global threshold/color values
         var rows = _.map(this.state.data, function(point) {
             return (
                 <PointRow key={point.uuid} thresholds={_.sortBy(this.props.valueLink.value, function(o) { return -o.time})} onClick={this.showDetail.bind(this, point)} {...point} />
             )
         }, this);
+
         return (
             <div className="dashboard">
                 <div className="row">
