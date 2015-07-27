@@ -95,8 +95,15 @@ io.on('connection', function (socket) {
 
             // on opening the websocket, send the query message
             wsconns[msg].on('open', function open() {
-                wsconns[msg].send(msg);
-                console.log('opened', msg);
+                var sendmsg;
+                if (msg.length == 0) {
+                    sendmsg = config.view;
+                } else {
+                    sendmsg = msg + " and " + config.view;
+                }
+                console.log("SUBSCRIBE TO", sendmsg);
+                wsconns[msg].send(sendmsg);
+                console.log('opened', sendmsg);
             });
 
             // when we receive a message from the server, emit the result

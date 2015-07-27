@@ -14,10 +14,21 @@ String.prototype.endsWith = function(suffix) {
 // convenience method for running AJAX POST
 var run_query = function(q, succ, err) {
     $.ajax({
-        url: queryURL,
+        url: '/query',
         datatype: 'json',
         type: 'POST',
-        data: q,
+        data: {query: q},
+        success: succ.bind(this),
+        error: err.bind(this)
+    });
+}
+
+var run_dataquery = function(q, succ, err) {
+    $.ajax({
+        url: '/dataquery',
+        datatype: 'json',
+        type: 'POST',
+        data: {query: q},
         success: succ.bind(this),
         error: err.bind(this)
     });

@@ -31,6 +31,9 @@ var Dashboard = React.createClass({
             }));
         });
     },
+    componentDidMount: function() {
+        this.submitQuery({});
+    },
     /*
      * When a query is submitted we submit it to the archiver, and render any error that we receive.
      * If there is no error, then we set our internal state to a mapping of UUID -> timeseries object.
@@ -38,7 +41,7 @@ var Dashboard = React.createClass({
      */
     submitQuery: function(e) {
         // fetch metadata query
-        var query = "select * where " + this.refs.queryInput.getValue();
+        var query = this.refs.queryInput.getValue();
         this.setState({query: query, error: null, loading: true});
         var self = this;
         run_query(query,
@@ -56,8 +59,7 @@ var Dashboard = React.createClass({
         );
 
         // fetch most recent data point query
-        var dataQuery = "select data before now as s where " + this.refs.queryInput.getValue();
-        run_query(dataQuery,
+        run_dataquery(query,
             function(data) {
                 var newstate = self.state.data;
                 _.each(data, function(obj) {
@@ -74,11 +76,10 @@ var Dashboard = React.createClass({
         );
 
         // set up realtime data updates
-        console.log("subscribe", this.refs.queryInput.getValue());
-        var subscribeQuery = this.refs.queryInput.getValue();
+        console.log("subscribe", query);
         var socket = io.connect();
-        socket.emit('new subscribe', subscribeQuery);
-        socket.on(subscribeQuery, function(data) {
+        socket.emit('new subscribe', query);
+        socket.on(query, function(data) {
             if (self.isMounted()) {
                 self.updateFromRepublish(data);
             }
