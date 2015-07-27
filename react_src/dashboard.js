@@ -1,6 +1,6 @@
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true};
+        return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true}
     },
     /*
      * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
@@ -104,7 +104,7 @@ var Dashboard = React.createClass({
         }
         var rows = _.map(this.state.data, function(point) {
             return (
-                <PointRow key={point.uuid} onClick={this.showDetail.bind(this, point)} {...point} />
+                <PointRow key={point.uuid} thresholds={_.sortBy(this.props.valueLink.value, function(o) { return -o.time})} onClick={this.showDetail.bind(this, point)} {...point} />
             )
         }, this);
         return (
@@ -151,8 +151,17 @@ var Dashboard = React.createClass({
 var PointRow = React.createClass({
     render: function() {
         //console.log("props", this.props);
+        var color = 'danger';
+        if (this.props.latestTime != null) {
+            var difference = moment().diff(this.props.latestTime, 'seconds');
+            _.each(this.props.thresholds, function(t) {
+                if (difference < t.time) {
+                    color = t.color;
+                }
+            });
+        }
         return (
-        <ListGroupItem href="#" onClick={this.props.onClick}>
+        <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={color}>
             <div className="pointRow">
                 <div className="row">
                     <div className="col-md-4">

@@ -1,8 +1,13 @@
 var queryURL = 'http://localhost:8079/api/query';
 
 var Deckard = React.createClass({
+    mixins: [React.addons.LinkedStateMixin],
     getInitialState: function() {
-        return {page: "dashboard"};
+        return {page: "dashboard", thresholds: [
+            {time: 30, color: "success"}, 
+            {time: 600, color: "warning"}, 
+            {time: 3600, color: "danger"}
+        ]}
     },
     componentDidMount: function() {
     },
@@ -15,7 +20,7 @@ var Deckard = React.createClass({
         switch (this.state.page) {
         case "dashboard":
             contents = (
-                <Dashboard />
+                <Dashboard valueLink={this.linkState('thresholds')}/>
             );
             break;
         case "config":
