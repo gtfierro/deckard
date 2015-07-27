@@ -6,15 +6,65 @@ var _ = require('underscore');
 var config = require('./config');
 var moment = require('moment');
 var http = require('http');
+var request = require('request');
+var bodyParser = require('body-parser')
 
 // server setup
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'))
 app.use(express.static('node_modules'))
+app.use(bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
 
 app.get('/', function(req, res) {
     res.render('index', {title: 'Deckard'});
+});
+
+app.post('/query', function(req, res) {
+    //console.log(config.httpArchiverUrl+"/api/query");
+    //console.log(req.headers);
+    //console.log(req.body);
+
+    var query = "select * where " + config.view;
+    if (req.body.query.length > 0) {
+        query = "select * where " + req.body.query + " and " + config.view;
+    }
+    request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
+        if (err) { return res.status(500).end('Error'); }
+        if (remoteBody.length == 0) {
+            res.end({});
+        }
+        try {
+            res.json(JSON.parse(remoteBody));
+        } catch(e) {
+            res.status(500).end(remoteBody);
+        }
+    });
+});
+
+app.post('/dataquery', function(req, res) {
+    //console.log(config.httpArchiverUrl+"/api/query");
+    //console.log(req.headers);
+    //console.log(req.body);
+
+    var query = "select data before now as s where " + config.view;
+    if (req.body.query.length > 0) {
+        query = "select data before now as s where " + req.body.query + " and " + config.view;
+    }
+    request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
+        if (err) { return res.status(500).end('Error'); }
+        if (remoteBody.length == 0) {
+            res.end({});
+        }
+        try {
+            res.json(JSON.parse(remoteBody));
+        } catch(e) {
+            res.status(500).end(remoteBody);
+        }
+    });
 });
 
 var server = app.listen(8000);
