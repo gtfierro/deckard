@@ -128,9 +128,6 @@ var Dashboard = React.createClass({
 
 
 var PointRow = React.createClass({
-    getInitialState: function() {
-        return {latestValue: null, latestTime: null}
-    },
     render: function() {
         //console.log("props", this.props);
         return (
@@ -145,6 +142,9 @@ var PointRow = React.createClass({
                     </div>
                     <div className="col-md-2">
                         {this.props.latestTime == null ? null : this.props.latestTime.format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                    </div>
+                    <div className="col-md-2">
+                        {this.props.latestTime == null ? null : this.props.latestTime.from(moment()) }
                     </div>
                 </div>
             </div>
