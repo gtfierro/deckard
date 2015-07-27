@@ -22,7 +22,6 @@ var Dashboard = React.createClass({
         )
     },
     showDetail: function(point) {
-        console.log(point);
         this.setState({selected: point});
     },
     render: function() {
@@ -60,14 +59,20 @@ var Dashboard = React.createClass({
                     </div>
                 </div>
                 {error}
-                <p>{this.state.query}</p>
                 <div className="row">
                     <div className="col-md-8">
                         <ListGroup>
+                            <ListGroupItem>
+                            <div className="row">
+                                <div className="col-md-4"><b>Path</b></div>
+                                <div className="col-md-2"><b>Latest Value</b></div>
+                                <div className="col-md-2"><b>Latest Time</b></div>
+                            </div>
+                            </ListGroupItem>
                             {rows}
                         </ListGroup>
                     </div>
-                    <div classname="col-md-4">
+                    <div className="col-md-4">
                         {detail}
                     </div>
                 </div>
@@ -78,11 +83,40 @@ var Dashboard = React.createClass({
 
 
 var PointRow = React.createClass({
+    getInitialState: function() {
+        return {latestValue: null, latestTime: null}
+    },
+    componentWillMount: function() {
+        var self = this;
+        run_query('select data before now as s where uuid = "'+this.props.uuid+'"',
+            function(data) {
+                if (data.length > 0 && data[0].Readings.length > 0) {
+                    console.log(data);
+                    var rdg = data[0].Readings[data[0].Readings.length-1];
+                    self.setState({latestValue: rdg[1], latestTime: moment.unix(rdg[0])});
+                    console.log(moment.unix(rdg[0]));
+                }
+            },
+            function(xhr) {
+                console.err(xhr.responseText);
+            }
+        );
+    },
     render: function() {
         return (
         <ListGroupItem href="#" onClick={this.props.onClick}>
             <div className="pointRow">
-                {this.props.Path}
+                <div className="row">
+                    <div className="col-md-4">
+                        {this.props.Path}
+                    </div>
+                    <div className="col-md-2">
+                        {this.state.latestValue}
+                    </div>
+                    <div className="col-md-2">
+                        {this.state.latestTime == null ? null : this.state.latestTime.format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                    </div>
+                </div>
             </div>
         </ListGroupItem>
         );

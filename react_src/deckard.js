@@ -29,7 +29,7 @@ var Deckard = React.createClass({
                         <ReactBootstrap.NavItem eventKey={"dashboard"}>Dashboard</ReactBootstrap.NavItem>
                     </ReactBootstrap.Nav>
                 </div>
-                <div className='col-md-9'>
+                <div className='col-md-10'>
                     {contents}
                 </div>
             </div>
