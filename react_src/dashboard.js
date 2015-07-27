@@ -17,6 +17,9 @@ var Dashboard = React.createClass({
         }
         return false;
     },
+    /*
+     * Here we use React's immutable updates to give it some hints on how to update the full DOM
+     */
     updateFromRepublish: function(newdata) {
         var self = this;
         _.each(_.values(newdata), function(obj) {
@@ -50,6 +53,24 @@ var Dashboard = React.createClass({
                 console.error(xhr.responseText);
             }
         );
+
+        var dataQuery = "select data before now as s where " + this.refs.queryInput.getValue();
+        run_query(dataQuery,
+            function(data) {
+                var newstate = self.state.data;
+                _.each(data, function(obj) {
+                    if (obj.Readings == null) { return; }
+                    newstate[obj.uuid].latestValue = obj.Readings[obj.Readings.length-1][1];
+                    newstate[obj.uuid].latestTime = moment.unix(obj.Readings[obj.Readings.length-1][0]);
+                });
+                self.setState({data: newstate, loading: false});
+            },
+            function(xhr,status,err) {
+                self.setState({error: xhr.responseText, loading:false});
+                console.error(xhr.responseText);
+            }
+        );
+
         console.log("subscribe", this.refs.queryInput.getValue());
         var subscribeQuery = this.refs.queryInput.getValue();
         var socket = io.connect();
