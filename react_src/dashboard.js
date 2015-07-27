@@ -1,25 +1,61 @@
-var queryURL = 'http://localhost:8079/api/query';
-
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {page: "dashboard", query: "", error: null, selected: null, loading: false};
+        return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true};
     },
-    componentDidMount: function() {
+    shouldComponentUpdate: function(nextState, nextProps) {
+        if (this.state.query == null) { return true; }
+        if (this.state.willUpdate) {
+            this.setState({willUpdate: false});
+            return true;
+        }
+        return false;
     },
+    updateFromRepublish: function(newdata) {
+        var self = this;
+        _.each(_.values(newdata), function(obj) {
+            self.setState(React.addons.update(self.state, {
+                data: makeProp(obj.uuid, {
+                    latestValue: {$set : obj.Readings[obj.Readings.length-1][1] },
+                    latestTime:  {$set : moment.unix(obj.Readings[obj.Readings.length-1][0]) }
+                })
+            }));
+        });
+    },
+    /*
+     * When a query is submitted we submit it to the archiver, and render any error that we receive.
+     * If there is no error, then we set our internal state to a mapping of UUID -> timeseries object.
+     * Each timeseries object contains the top level keys Metadata, Properties, Path, uuid and Readings
+     */
     submitQuery: function(e) {
         var query = "select * where " + this.refs.queryInput.getValue();
         this.setState({query: query, error: null, loading: true});
         var self = this;
         run_query(query,
             function(data) {
-                console.log(data);
-                self.setState({data: data, loading: false});
+                var newstate = {};
+                _.each(data, function(obj) {
+                    newstate[obj.uuid] = obj;
+                });
+                self.setState({data: newstate, loading: false});
             },
             function(xhr,status,err) {
                 self.setState({error: xhr.responseText, loading:false});
                 console.error(xhr.responseText);
             }
-        )
+        );
+        console.log("subscribe", this.refs.queryInput.getValue());
+        var subscribeQuery = this.refs.queryInput.getValue();
+        var socket = io.connect();
+        socket.emit('new subscribe', subscribeQuery);
+        socket.on(subscribeQuery, function(data) {
+            if (self.isMounted()) {
+                self.updateFromRepublish(data);
+            }
+        });
+        this.setState({socket: socket});
+        setInterval(function () {
+            self.setState({willUpdate: true});
+        }, 1000);
     },
     showDetail: function(point) {
         this.setState({selected: point});
@@ -88,23 +124,8 @@ var PointRow = React.createClass({
     getInitialState: function() {
         return {latestValue: null, latestTime: null}
     },
-    componentWillMount: function() {
-        var self = this;
-        run_query('select data before now as s where uuid = "'+this.props.uuid+'"',
-            function(data) {
-                if (data.length > 0 && data[0].Readings.length > 0) {
-                    console.log(data);
-                    var rdg = data[0].Readings[data[0].Readings.length-1];
-                    self.setState({latestValue: rdg[1], latestTime: moment.unix(rdg[0])});
-                    console.log(moment.unix(rdg[0]));
-                }
-            },
-            function(xhr) {
-                console.err(xhr.responseText);
-            }
-        );
-    },
     render: function() {
+        //console.log("props", this.props);
         return (
         <ListGroupItem href="#" onClick={this.props.onClick}>
             <div className="pointRow">
@@ -113,10 +134,10 @@ var PointRow = React.createClass({
                         {this.props.Path}
                     </div>
                     <div className="col-md-2">
-                        {this.state.latestValue}
+                        {this.props.latestValue}
                     </div>
                     <div className="col-md-2">
-                        {this.state.latestTime == null ? null : this.state.latestTime.format("dddd, MMMM Do YYYY, h:mm:ss a")}
+                        {this.props.latestTime == null ? null : this.props.latestTime.format("dddd, MMMM Do YYYY, h:mm:ss a")}
                     </div>
                 </div>
             </div>

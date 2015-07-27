@@ -22,3 +22,9 @@ var run_query = function(q, succ, err) {
         error: err.bind(this)
     });
 };
+
+function makeProp(prop, value) {
+  var obj = {}
+  obj[prop] = value
+  return obj
+}
