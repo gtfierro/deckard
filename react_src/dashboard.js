@@ -66,7 +66,7 @@ var Dashboard = React.createClass({
             function(data) {
                 var newstate = self.state.data;
                 _.each(data, function(obj) {
-                    if (obj.Readings == null) { return; }
+                    if (obj == null || obj.Readings == null || obj.uuid == null ) { return; }
                     if (newstate[obj.uuid] == null) { return; }
                     newstate[obj.uuid].latestValue = obj.Readings[obj.Readings.length-1][1];
                     newstate[obj.uuid].latestTime = moment.unix(obj.Readings[obj.Readings.length-1][0]);
