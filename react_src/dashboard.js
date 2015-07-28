@@ -211,11 +211,12 @@ var PointRow = React.createClass({
     },
     goToPlot: function() {
         console.log("get permalink for", this.props.uuid);
+        var self = this;
         this.setState({loading: true});
         get_permalink(this.props.uuid,
             function(url) {
                 console.log(url);
-                this.setState({loading: false});
+                self.setState({loading: false});
                 window.open(url, '_blank');
             },
             function(xhr) {
