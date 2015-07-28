@@ -215,8 +215,8 @@ var PointRow = React.createClass({
         get_permalink(this.props.uuid,
             function(url) {
                 console.log(url);
-                window.open(url, '_blank');
                 this.setState({loading: false});
+                window.open(url, '_blank');
             },
             function(xhr) {
             }
