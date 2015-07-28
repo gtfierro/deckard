@@ -3,6 +3,7 @@ var Nav = ReactBootstrap.Nav;
 var NavItem = ReactBootstrap.NavItem;
 var Button = ReactBootstrap.Button;
 var Panel = ReactBootstrap.Panel;
+var Glyphicon = ReactBootstrap.Glyphicon;
 var ButtonToolbar = ReactBootstrap.ButtonToolbar;
 var ListGroup = ReactBootstrap.ListGroup;
 var ListGroupItem = ReactBootstrap.ListGroupItem;
