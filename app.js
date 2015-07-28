@@ -67,6 +67,23 @@ app.post('/dataquery', function(req, res) {
     });
 });
 
+app.post('/permalink', function(req, res) {
+    var spec = {
+        "window_type": "now",
+        "window_width": 3600000000000,  // an hour
+        "streams": [
+            {"stream": req.body.uuid}
+        ]
+    }
+    var tosend = {"permalink_data": JSON.stringify(spec)};
+    console.log(tosend);
+    console.log(config.plotterURL);
+    request.post({url: config.plotterURL+"/s3ui_permalink", json: tosend}, function(err, remoteResponse, remoteBody) {
+        if (err) { return res.status(500).end(err.message, remoteBody, remoteResponse); }
+        res.end(config.plotterURL+"/?"+remoteBody);
+    });
+});
+
 var server = app.listen(8000);
 console.log('Server listening on port 8000');
 
