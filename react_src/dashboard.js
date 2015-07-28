@@ -25,6 +25,7 @@ var Dashboard = React.createClass({
         var self = this;
         _.each(_.values(newdata), function(obj) {
             if (obj.Readings == null) { return; }
+            if (self.state.data[obj.uuid] == null) { return; }
             self.setState(React.addons.update(self.state, {
                 data: makeProp(obj.uuid, {
                     latestValue: {$set : obj.Readings[obj.Readings.length-1][1] },
@@ -139,11 +140,11 @@ var Dashboard = React.createClass({
             rows = _.sortBy(rows, function(r) {
                 switch (self.state.sortRowsLabel) {
                 case "Path":
-                    return r.props.Path
+                    return r.props.Path == null ? -Number.MIN_VALUE : r.props.Path
                 case "Value":
-                    return r.props.latestValue
+                    return r.props.latestValue == null ? -Number.MIN_VALUE : r.props.latestValue
                 case "Time":
-                    return r.props.latestTime
+                    return r.props.latestTime == null ? -Number.MIN_VALUE : r.props.latestTime
                 }
             });
             if (!this.state.sortRowsAscending) {
