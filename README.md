@@ -57,3 +57,13 @@ $ npm start
 
 from the repository's root directory.
 
+
+## TODOs
+
+* DOCUMENTATION
+* Fix units on republish
+* Add ability to save queries as a name? e.g. save Metadata/HVAC/Zone = "Conference" as "Conference HVAC" from a drop down menu?
+    * save in mongodb behind the app, probably
+* Flash rows when they update
+* add the autocomplete, +/- interface like tyler had for the old status page
+* ~~add ability to sort rows by each available column~~
