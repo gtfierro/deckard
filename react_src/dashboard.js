@@ -170,6 +170,11 @@ var Dashboard = React.createClass({
                     </div>
                 </div>
                 {error}
+                //<div className="row">
+                //    <div className="col-md-2">
+                //        <Input type='checkbox' label='Flash on Update' ref="animateOnUpdate" onChange={this.toggleAnimateOnUpdate} />
+                //    </div>
+                //</div>
                 <div className="row">
                     <div className="col-md-8">
                         <ListGroup>
