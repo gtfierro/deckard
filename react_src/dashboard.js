@@ -181,7 +181,7 @@ var Dashboard = React.createClass({
                                 <div className="col-md-2 hover" onClick={this.sortRows.bind(this, "Value")}>
                                     <b>Latest Value</b>
                                 </div>
-                                <div className="col-md-2 hover" onClick={this.sortRows.bind(this, "Time")}>
+                                <div className="col-md-4 hover" onClick={this.sortRows.bind(this, "Time")}>
                                     <b>Latest Time</b>
                                 </div>
                             </div>
