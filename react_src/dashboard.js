@@ -1,6 +1,7 @@
 var Dashboard = React.createClass({
     getInitialState: function() {
-        return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true}
+        return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true,
+                animateOnUpdate: false, sortRowsLabel: null, sortRowsAscending: null}
     },
     /*
      * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
@@ -93,6 +94,20 @@ var Dashboard = React.createClass({
     showDetail: function(point) {
         this.setState({selected: point});
     },
+    toggleAnimateOnUpdate: function(e) {
+        this.setState({animateOnUpdate: e.target.checked});
+    },
+    sortRows: function(label) {
+        console.log("sort by", label);
+        this.setState({sortRowsLabel: label});
+        if (this.state.sortRowsAscending == null) {
+            this.setState({sortRowsAscending: false});
+        } else if (!this.state.sortRowsAscending) {
+            this.setState({sortRowsAscending: true});
+        } else {
+            this.setState({sortRowsAscending: null});
+        }
+    },
     render: function() {
         var self = this;
 
@@ -119,6 +134,22 @@ var Dashboard = React.createClass({
                 <PointRow key={point.uuid} thresholds={_.sortBy(this.props.valueLink.value, function(o) { return -o.time})} onClick={this.showDetail.bind(this, point)} {...point} />
             )
         }, this);
+
+        if (this.state.sortRowsLabel != null) {
+            rows = _.sortBy(rows, function(r) {
+                switch (self.state.sortRowsLabel) {
+                case "Path":
+                    return r.props.Path
+                case "Value":
+                    return r.props.latestValue
+                case "Time":
+                    return r.props.latestTime
+                }
+            });
+            if (!this.state.sortRowsAscending) {
+                rows.reverse();
+            }
+        }
 
         return (
             <div className="dashboard">
