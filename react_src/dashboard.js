@@ -152,6 +152,11 @@ var Dashboard = React.createClass({
             }
         }
 
+       //<div className="row">
+       //    <div className="col-md-2">
+       //        <Input type='checkbox' label='Flash on Update' ref="animateOnUpdate" onChange={this.toggleAnimateOnUpdate} />
+       //    </div>
+       //</div>
         return (
             <div className="dashboard">
                 <div className="row">
@@ -170,11 +175,6 @@ var Dashboard = React.createClass({
                     </div>
                 </div>
                 {error}
-                //<div className="row">
-                //    <div className="col-md-2">
-                //        <Input type='checkbox' label='Flash on Update' ref="animateOnUpdate" onChange={this.toggleAnimateOnUpdate} />
-                //    </div>
-                //</div>
                 <div className="row">
                     <div className="col-md-8">
                         <ListGroup>
@@ -189,6 +189,7 @@ var Dashboard = React.createClass({
                                 <div className="col-md-4 hover" onClick={this.sortRows.bind(this, "Time")}>
                                     <b>Latest Time</b>
                                 </div>
+                                <div className="col-md-1"></div>
                             </div>
                             </ListGroupItem>
                             {rows}
@@ -205,6 +206,22 @@ var Dashboard = React.createClass({
 
 
 var PointRow = React.createClass({
+    getInitialState: function() {
+        return {loading: false}
+    },
+    goToPlot: function() {
+        console.log("get permalink for", this.props.uuid);
+        this.setState({loading: true});
+        get_permalink(this.props.uuid,
+            function(url) {
+                console.log(url);
+                window.open(url, '_blank');
+                this.setState({loading: false});
+            },
+            function(xhr) {
+            }
+        );
+    },
     render: function() {
         //console.log("props", this.props);
         var color = 'danger';
@@ -231,6 +248,13 @@ var PointRow = React.createClass({
                     </div>
                     <div className="col-md-2">
                         {this.props.latestTime == null ? null : this.props.latestTime.from(moment()) }
+                    </div>
+                    <div className="col-md-1">
+                        <Button onClick={this.goToPlot} 
+                                bsStyle="info"
+                                disabled={this.state.loading}>
+                            {this.state.loading ? "Fetching" : "Plot"}
+                        </Button>
                     </div>
                 </div>
             </div>

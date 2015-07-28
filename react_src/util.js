@@ -40,3 +40,14 @@ function makeProp(prop, value) {
   obj[prop] = value
   return obj
 }
+
+function get_permalink(uuid, succ, err) {
+    $.ajax({
+        url: '/permalink',
+        datatype: 'json',
+        type: 'POST',
+        data: {uuid: uuid},
+        success: succ.bind(this),
+        error: err.bind(this)
+    });
+}
