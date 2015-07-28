@@ -24,7 +24,7 @@ var Dashboard = React.createClass({
     updateFromRepublish: function(newdata) {
         var self = this;
         _.each(_.values(newdata), function(obj) {
-            if (obj.Readings == null) { return; }
+            if (obj == null || obj.Readings == null || obj.uuid == null ) { return; }
             if (self.state.data[obj.uuid] == null) { return; }
             self.setState(React.addons.update(self.state, {
                 data: makeProp(obj.uuid, {
