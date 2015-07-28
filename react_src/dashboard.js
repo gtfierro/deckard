@@ -143,9 +143,15 @@ var Dashboard = React.createClass({
                         <ListGroup>
                             <ListGroupItem>
                             <div className="row">
-                                <div className="col-md-4"><b>Path</b></div>
-                                <div className="col-md-2"><b>Latest Value</b></div>
-                                <div className="col-md-2"><b>Latest Time</b></div>
+                                <div className="col-md-5 hover" onClick={this.sortRows.bind(this, "Path")}>
+                                    <b>Path</b>
+                                </div>
+                                <div className="col-md-2 hover" onClick={this.sortRows.bind(this, "Value")}>
+                                    <b>Latest Value</b>
+                                </div>
+                                <div className="col-md-2 hover" onClick={this.sortRows.bind(this, "Time")}>
+                                    <b>Latest Time</b>
+                                </div>
                             </div>
                             </ListGroupItem>
                             {rows}
@@ -177,7 +183,7 @@ var PointRow = React.createClass({
         <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={color}>
             <div className="pointRow">
                 <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-5">
                         {this.props.Path}
                     </div>
                     <div className="col-md-2">
