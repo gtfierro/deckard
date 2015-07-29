@@ -65,6 +65,7 @@ var Dashboard = React.createClass({
         run_dataquery(query,
             function(data) {
                 var newstate = self.state.data;
+                if (newstate == null) { return; }
                 _.each(data, function(obj) {
                     if (obj == null || obj.Readings == null || obj.uuid == null ) { return; }
                     if (newstate[obj.uuid] == null) { return; }
