@@ -70,7 +70,7 @@ app.post('/dataquery', function(req, res) {
 app.post('/permalink', function(req, res) {
     var spec = {
         "window_type": "now",
-        "window_width": 3600000000000,  // an hour
+        "window_width": parseInt(req.body.duration),
         "streams": [
             {"stream": req.body.uuid}
         ]

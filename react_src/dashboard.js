@@ -182,7 +182,7 @@ var Dashboard = React.createClass({
                         <ListGroup>
                             <ListGroupItem>
                             <div className="row">
-                                <div className="col-md-5 hover" onClick={this.sortRows.bind(this, "Path")}>
+                                <div className="col-md-4 hover" onClick={this.sortRows.bind(this, "Path")}>
                                     <b>Path</b>
                                 </div>
                                 <div className="col-md-2 hover" onClick={this.sortRows.bind(this, "Value")}>
@@ -191,7 +191,7 @@ var Dashboard = React.createClass({
                                 <div className="col-md-4 hover" onClick={this.sortRows.bind(this, "Time")}>
                                     <b>Latest Time</b>
                                 </div>
-                                <div className="col-md-1"></div>
+                                <div className="col-md-2"></div>
                             </div>
                             </ListGroupItem>
                             {rows}
@@ -209,13 +209,14 @@ var Dashboard = React.createClass({
 
 var PointRow = React.createClass({
     getInitialState: function() {
-        return {loading: false}
+        return {loading: false, plotDuration: 'hour'} // default 1 hour
     },
     goToPlot: function() {
         console.log("get permalink for", this.props.uuid);
         var self = this;
         this.setState({loading: true});
-        get_permalink(this.props.uuid,
+        console.log("duration", durationLookup[this.state.plotDuration]);
+        get_permalink(this.props.uuid, parseInt(durationLookup[this.state.plotDuration]),
             function(url) {
                 console.log(url);
                 self.setState({loading: false});
@@ -224,6 +225,9 @@ var PointRow = React.createClass({
             function(xhr) {
             }
         );
+    },
+    changeDuration: function(e) {
+        this.setState({plotDuration: this.refs.plotDuration.getValue()});
     },
     render: function() {
         //console.log("props", this.props);
@@ -240,7 +244,7 @@ var PointRow = React.createClass({
         <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={color}>
             <div className="pointRow">
                 <div className="row">
-                    <div className="col-md-5">
+                    <div className="col-md-4">
                         {this.props.Path}
                     </div>
                     <div className="col-md-2">
@@ -252,12 +256,24 @@ var PointRow = React.createClass({
                     <div className="col-md-2">
                         {this.props.latestTime == null ? null : this.props.latestTime.from(moment()) }
                     </div>
-                    <div className="col-md-1">
-                        <Button onClick={this.goToPlot} 
-                                bsStyle="info"
-                                disabled={this.state.loading}>
-                            {this.state.loading ? "Fetching" : "Plot"}
-                        </Button>
+                    <div className="col-md-2">
+                        <div className="row">
+                          <div className="col-md-5">
+                            <Button onClick={this.goToPlot} 
+                                    bsStyle="info"
+                                    disabled={this.state.loading}>
+                                {this.state.loading ? "Fetching" : "Plot last"}
+                            </Button>
+                          </div>
+                          <div className="col-md-7">
+                            <Input type='select' onChange={this.changeDuration} ref="plotDuration" value={this.state.plotDuration}>
+                              <option value='sec'>sec</option>
+                              <option value='min'>min</option>
+                              <option value='hour'>hour</option>
+                              <option value='day'>day</option>
+                            </Input>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>

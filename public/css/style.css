@@ -39,3 +39,7 @@ body {
 .hover:hover {
     background-color: #D4D4D4;
 }
+
+select {
+    width: auto !important;
+}
