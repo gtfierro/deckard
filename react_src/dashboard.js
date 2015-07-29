@@ -1,7 +1,7 @@
 var Dashboard = React.createClass({
     getInitialState: function() {
         return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true,
-                animateOnUpdate: false, sortRowsLabel: null, sortRowsAscending: null}
+                animateOnUpdate: false, sortRowsLabel: "Time", sortRowsAscending: false}
     },
     /*
      * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,

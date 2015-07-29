@@ -57,7 +57,7 @@ var Deckard = React.createClass({
                         </p>
 
                         <p>
-                        Rows are not sorted by default, but you can click on the headers multiple times to sort ascending
+                        Rows are sorted by latest time by default, but you can click on the headers multiple times to sort ascending
                         or descending by that column.
                         </p>
 
