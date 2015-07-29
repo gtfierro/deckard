@@ -192,13 +192,13 @@ var Dashboard = React.createClass({
                 {error}
                 <div className="row">
                     <form onSubmit={this.changeThreshold}>
-                        <div className="col-md-1">
+                        <div className="col-md-2">
                             <Button type="submit" >Change Thresholds</Button>
                         </div>
-                        <div className="col-md-1">
+                        <div className="col-md-2">
                             <Input type='text' maxLength="7" size="4" addonBefore="Warning" bsStyle="warning" defaultValue={this.state.thresholds.warning} ref="warningThreshold" />
                         </div>
-                        <div className="col-md-1">
+                        <div className="col-md-2">
                             <Input type='text' maxLength="7" size="4" addonBefore="Danger" bsStyle="error" defaultValue={this.state.thresholds.danger} ref="dangerThreshold" />
                         </div>
                     </form>
