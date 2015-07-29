@@ -1,7 +1,11 @@
 var Dashboard = React.createClass({
     getInitialState: function() {
         return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true,
-                animateOnUpdate: false, sortRowsLabel: "Time", sortRowsAscending: false}
+                animateOnUpdate: false, sortRowsLabel: "Time", sortRowsAscending: false,
+                thresholds: {
+                    "warning": 30,
+                    "danger": 600
+                }}
     },
     /*
      * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
@@ -101,6 +105,14 @@ var Dashboard = React.createClass({
     toggleAnimateOnUpdate: function(e) {
         this.setState({animateOnUpdate: e.target.checked});
     },
+    changeThreshold: function(e) {
+        e.preventDefault();
+        var thresholds = this.state.thresholds;
+        thresholds.warning = parseInt(this.refs.warningThreshold.getValue());
+        thresholds.danger = parseInt(this.refs.dangerThreshold.getValue());
+        console.log("new thresholds", thresholds);
+        this.setState({thresholds: thresholds});
+    },
     sortRows: function(label) {
         console.log("sort by", label);
         this.setState({sortRowsLabel: label});
@@ -135,7 +147,7 @@ var Dashboard = React.createClass({
         // thresholds is built off of the global threshold/color values
         var rows = _.map(this.state.data, function(point) {
             return (
-                <PointRow key={point.uuid} thresholds={_.sortBy(this.props.valueLink.value, function(o) { return -o.time})} onClick={this.showDetail.bind(this, point)} {...point} />
+                <PointRow key={point.uuid} thresholds={this.state.thresholds} onClick={this.showDetail.bind(this, point)} {...point} />
             )
         }, this);
 
@@ -178,6 +190,19 @@ var Dashboard = React.createClass({
                     </div>
                 </div>
                 {error}
+                <div className="row">
+                    <form onSubmit={this.changeThreshold}>
+                        <div className="col-md-1">
+                            <Button type="submit" >Change Thresholds</Button>
+                        </div>
+                        <div className="col-md-1">
+                            <Input type='text' maxLength="7" size="4" addonBefore="Warning" bsStyle="warning" defaultValue={this.state.thresholds.warning} ref="warningThreshold" />
+                        </div>
+                        <div className="col-md-1">
+                            <Input type='text' maxLength="7" size="4" addonBefore="Danger" bsStyle="error" defaultValue={this.state.thresholds.danger} ref="dangerThreshold" />
+                        </div>
+                    </form>
+                </div>
                 <div className="row">
                     <div className="col-md-8">
                         <ListGroup>
@@ -235,11 +260,14 @@ var PointRow = React.createClass({
         var color = 'danger';
         if (this.props.latestTime != null) {
             var difference = moment().diff(this.props.latestTime, 'seconds');
-            _.each(this.props.thresholds, function(t) {
-                if (difference < t.time) {
-                    color = t.color;
-                }
-            });
+
+            if (difference < this.props.thresholds.warning) {
+                color = "success";
+            } else if (difference < this.props.thresholds.danger) {
+                color = "warning";
+            } else {
+                color = "danger";
+            }
         }
         return (
         <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={color}>
@@ -260,7 +288,7 @@ var PointRow = React.createClass({
                     <div className="col-md-2">
                         <div className="row">
                           <div className="col-md-5">
-                            <Button onClick={this.goToPlot} 
+                            <Button onClick={this.goToPlot}
                                     bsStyle="info"
                                     disabled={this.state.loading}>
                                 {this.state.loading ? "Fetching" : "Plot last"}
