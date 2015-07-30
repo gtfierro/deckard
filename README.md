@@ -67,3 +67,5 @@ from the repository's root directory.
 * Flash rows when they update
 * add the autocomplete, +/- interface like tyler had for the old status page
 * ~~add ability to sort rows by each available column~~
+
+<img src="http://www.thegalleryofheroes.com/wp-content/uploads/2010/02/Rick-Deckard.jpg" width="200 px" />
