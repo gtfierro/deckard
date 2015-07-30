@@ -9,14 +9,13 @@ Deckard will contain several Views:
 
 * Monitor View:
     * executing a metadata query over the archiver to return a list of points
-      -- this metadata query will be continuously updated so that it can
-      flexibly handle changes in the qualifying sources
+      * this metadata query will be continuously updated so that it can flexibly handle changes in the qualifying sources
     * Each row will contain the Path, UUID, the latest value, the number of values, and the earliest known point
     * Each row will additionally be colored w/ a status.
-    * The status "tiers" will be determined by user-defined rules, naively by thresholds on the last time a point reported
+    * The status "tiers" will be determined by user-defined thresholds on the last time a point reported
 * Alarm View:
     * at last, easy-to-use alarms for sMAP!
-    * send emails or texts when certain user-defined conditions are met
+    * send emails or texts when certain basic conditions are met
 * Plotter:
     * easily generate permalinks to plot views on the BtrDB plotter
 
@@ -57,10 +56,20 @@ $ npm start
 
 from the repository's root directory.
 
+## Alerts
+
+This is the next major feature of Deckard to introduce. It is not (yet) the job of Deckard to provide
+general-purpose monitoring, though this might be a good place to go forward. For now, there are 2 types
+of alarms Deckard will provide:
+* periodic reports: at a user-defined interval, a report will be emailed to the user detailing which sources
+  have gone up and down, cumulatively and since the last report
+* event-based reports: send an email to the user when the threshold on a value or report time is exceeded
+
+Moving forward, I'd like to allow users to run Lua scripts that do computations on segments of data, and send
+an email when certain conditions are met.
 
 ## TODOs
 
-* DOCUMENTATION
 * Fix units on republish
 * Add ability to save queries as a name? e.g. save Metadata/HVAC/Zone = "Conference" as "Conference HVAC" from a drop down menu?
     * save in mongodb behind the app, probably
