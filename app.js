@@ -27,10 +27,14 @@ app.post('/query', function(req, res) {
     //console.log(config.httpArchiverUrl+"/api/query");
     //console.log(req.headers);
     //console.log(req.body);
+    var view = config.view;
+    if (view.length == 0) {
+        view = "has uuid";
+    }
 
-    var query = "select * where " + config.view;
+    var query = "select * where " + view;
     if (req.body.query.length > 0) {
-        query = "select * where " + req.body.query + " and " + config.view;
+        query = "select * where " + req.body.query + " and " + view;
     }
     request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
         if (err) { return res.status(500).end('Error'); }
@@ -49,10 +53,14 @@ app.post('/dataquery', function(req, res) {
     //console.log(config.httpArchiverUrl+"/api/query");
     //console.log(req.headers);
     //console.log(req.body);
+    var view = config.view;
+    if (view.length == 0) {
+        view = "has uuid";
+    }
 
-    var query = "select data before now as s where " + config.view;
+    var query = "select data before now as s where " + view;
     if (req.body.query.length > 0) {
-        query = "select data before now as s where " + req.body.query + " and " + config.view;
+        query = "select data before now as s where " + req.body.query + " and " + view;
     }
     request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
         if (err) { return res.status(500).end('Error'); }
