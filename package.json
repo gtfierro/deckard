@@ -13,6 +13,7 @@
         "underscore":"*",
         "moment":"*",
         "multer":"*",
-        "body-parser":"*"
+        "body-parser":"*",
+        "mongoskin": "*"
     }
 }

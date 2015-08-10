@@ -11,4 +11,7 @@ config.wsArchiverPort = 8078;
 config.wsArchiverUrl = 'ws://'+config.archiverHost+":"+config.wsArchiverPort;
 config.plotterURL = 'http://'+config.archiverHost;
 
+// mongodb information
+config.mongohost = 'mongodb://localhost:27017/deckard';
+
 module.exports = config;
