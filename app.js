@@ -20,13 +20,14 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.get('/', function(req, res) {
-    res.render('index', {title: 'Deckard'});
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/config', function(req, res) {
+    res.sendFile(path.join(__dirname, 'public', 'config.html'));
 });
 
 app.post('/query', function(req, res) {
-    //console.log(config.httpArchiverUrl+"/api/query");
-    //console.log(req.headers);
-    //console.log(req.body);
     var view = config.view;
     if (view.length == 0) {
         view = "has uuid";
@@ -50,9 +51,6 @@ app.post('/query', function(req, res) {
 });
 
 app.post('/dataquery', function(req, res) {
-    //console.log(config.httpArchiverUrl+"/api/query");
-    //console.log(req.headers);
-    //console.log(req.body);
     var view = config.view;
     if (view.length == 0) {
         view = "has uuid";
