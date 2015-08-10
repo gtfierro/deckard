@@ -5,13 +5,16 @@ var WebSocket = require('ws');
 var _ = require('underscore');
 var config = require('./config');
 var moment = require('moment');
+var exphbs  = require('express-handlebars');
 var http = require('http');
 var request = require('request');
 var bodyParser = require('body-parser')
 
 // server setup
 var app = express();
-app.set('views', path.join(__dirname, 'views'));
+//app.set('views', path.join(__dirname, 'views'));
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 app.use(express.static('public'))
 app.use(express.static('node_modules'))
 app.use(bodyParser.json() );       // to support JSON-encoded bodies
@@ -20,11 +23,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.render('index', {layout: false});
 });
 
 app.get('/config', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public', 'config.html'));
+    res.render('config', {layout: false});
 });
 
 app.post('/query', function(req, res) {

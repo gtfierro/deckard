@@ -7,33 +7,19 @@ var Deckard = React.createClass({
     },
     componentDidMount: function() {
     },
-    handleSelect(selectedKey) {
-        console.log('selected ' + selectedKey);
-        this.setState({page: selectedKey});
-    },
+    //handleSelect(selectedKey) {
+    //    console.log('selected ' + selectedKey);
+    //    //this.setState({page: selectedKey});
+    //},
     render: function() {
-        var contents = (<p>Loading...</p>);
-        switch (this.state.page) {
-        case "dashboard":
-            contents = (
-                <Dashboard />
-            );
-            break;
-        case "config":
-            contents = (
-                <ConfigDashboard />
-            );
-            break;
-        }
-
         return (
             <div className="deckard">
             <h1>Status Dashboard</h1>
             <div className="row">
                 <div className='col-md-2'>
-                    <ReactBootstrap.Nav bsStyle='pills' stacked activeKey={this.state.page} onSelect={this.handleSelect}>
-                        <ReactBootstrap.NavItem eventKey={"dashboard"}>Dashboard</ReactBootstrap.NavItem>
-                        <ReactBootstrap.NavItem eventKey={"config"}>Config</ReactBootstrap.NavItem>
+                    <ReactBootstrap.Nav bsStyle='pills' stacked activeKey={this.state.page}>
+                        <ReactBootstrap.NavItem eventKey={"dashboard"} href="/">Dashboard</ReactBootstrap.NavItem>
+                        <ReactBootstrap.NavItem eventKey={"config"} href="/config">Config</ReactBootstrap.NavItem>
                     </ReactBootstrap.Nav>
                     <br />
                     <Panel header="Welcome to Deckard" bsStyle="info">
@@ -60,7 +46,7 @@ var Deckard = React.createClass({
                     </Panel>
                 </div>
                 <div className='col-md-10'>
-                    {contents}
+                    <Dashboard />
                 </div>
             </div>
             </div>
