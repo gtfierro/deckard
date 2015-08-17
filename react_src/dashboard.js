@@ -1,7 +1,9 @@
 var Dashboard = React.createClass({
+    mixins: [React.addons.LinkedStateMixin],
     getInitialState: function() {
         return {page: "dashboard", query: "", error: null, selected: null, loading: false, willUpdate: true,
                 animateOnUpdate: false, sortRowsLabel: "Time", sortRowsAscending: false,
+                dashPermalink: null,
                 thresholds: {
                     "warning": 30,
                     "danger": 600
@@ -39,8 +41,28 @@ var Dashboard = React.createClass({
             }));
         });
     },
-    componentDidMount: function() {
+    componentWillMount: function() {
+        var permalink = window.location.hash;
+        var self= this;
+        if (!permalink) { return; }
+        permalink = permalink.slice(1,permalink.length);
+        console.log("permalink?", permalink);
+        get_dash_permalink(permalink, 
+            function(res) {
+                console.log("got permalink!", res);
+                //self.refs.queryInput.setValue(res.query);
+                self.setState({query: res});
+                self.submitQuery();
+            },
+            function (xhr) {
+                self.setState({error: xhr.responseText});
+                console.error(xhr.responseText);
+            }
+        );
         this.submitQuery({});
+    },
+    handleQueryChange: function(c) {
+        this.setChange({query: c});
     },
     /*
      * When a query is submitted we submit it to the archiver, and render any error that we receive.
@@ -49,8 +71,8 @@ var Dashboard = React.createClass({
      */
     submitQuery: function(e) {
         // fetch metadata query
-        var query = this.refs.queryInput.getValue();
-        this.setState({query: query, error: null, loading: true});
+        var query = this.state.query;
+        this.setState({error: null, loading: true});
         var self = this;
         run_query(query,
             function(data) {
@@ -110,6 +132,19 @@ var Dashboard = React.createClass({
         console.log("new thresholds", thresholds);
         this.setState({thresholds: thresholds});
     },
+    savePermalink: function(e) {
+        e.preventDefault();
+        var self = this;
+        save_dash_permalink(this.state.query,
+            function (permalink) {
+                self.setState({dashPermalink: format_permalink(permalink)});
+            },
+            function (xhr) {
+                self.setState({error: xhr.responseText});
+                console.error(xhr.responseText);
+            }
+        );
+    },
     sortRows: function(label) {
         console.log("sort by", label);
         this.setState({sortRowsLabel: label});
@@ -164,6 +199,10 @@ var Dashboard = React.createClass({
             }
         }
 
+        var savePermalinkButton = (
+            <Button bsStyle="info" onClick={this.savePermalink}>Get Permalink!</Button>
+        );
+
        //<div className="row">
        //    <div className="col-md-2">
        //        <Input type='checkbox' label='Flash on Update' ref="animateOnUpdate" onChange={this.toggleAnimateOnUpdate} />
@@ -172,19 +211,20 @@ var Dashboard = React.createClass({
         return (
             <div className="dashboard">
                 <div className="row">
-                    <div className="col-md-10">
-                        <Input
-                            type='text'
-                            placeholder="where clause"
-                            ref="queryInput"
-                            hasFeedback
-                        />
-                    </div>
-                    <div className="col-md-2">
-                        <Button onClick={this.submitQuery} disabled={this.state.loading} bsStyle='success'>
-                            {this.state.loading ? "Loading..." : "Query"}
-                        </Button>
-                    </div>
+                    <form onSubmit={this.submitQueryForm}>
+                        <div className="col-md-10">
+                            <Input
+                                type='text'
+                                valueLink={this.linkState("query")}
+                                hasFeedback
+                            />
+                        </div>
+                        <div className="col-md-2">
+                            <Button type="submit" onClick={this.submitQuery} disabled={this.state.loading} bsStyle='success'>
+                                {this.state.loading ? "Loading..." : "Query"}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
                 {error}
                 <div className="row">
@@ -197,6 +237,9 @@ var Dashboard = React.createClass({
                         </div>
                         <div className="col-md-2">
                             <Input type='text' maxLength="7" size="4" addonBefore="Danger" bsStyle="error" defaultValue={this.state.thresholds.danger} ref="dangerThreshold" />
+                        </div>
+                        <div className="col-md-4">
+                            <Input type='text' maxLength="6" size="6" buttonBefore={savePermalinkButton} value={this.state.dashPermalink} />
                         </div>
                     </form>
                 </div>
