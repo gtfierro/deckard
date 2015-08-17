@@ -65,10 +65,10 @@ var Dashboard = React.createClass({
                 _.each(data, function(obj) {
                     newstate[obj.uuid] = obj;
                 });
-                self.setState({data: newstate, loading: false});
+                self.setState({data: newstate});
             },
             function(xhr,status,err) {
-                self.setState({error: xhr.responseText, loading:false});
+                self.setState({error: xhr.responseText});
                 console.error(xhr.responseText);
             }
         );
