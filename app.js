@@ -4,6 +4,7 @@ var path = require('path');
 var WebSocket = require('ws');
 var _ = require('underscore');
 var config = require('./config');
+var permalink = require('./permalink');
 var moment = require('moment');
 var exphbs  = require('express-handlebars');
 var http = require('http');
@@ -22,9 +23,40 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
+
 app.get('/', function(req, res) {
     res.render('index', {layout: false});
 });
+
+app.get('/index', function(req, res) {
+    res.render('index', {layout: false});
+});
+
+app.get('/dashpermalink/:permalinkid', function(req, res) {
+    if (!req.params.permalinkid) {
+        res.render('index', {layout: false});
+    }
+    console.log("get", req.params.permalinkid);
+    permalink.getPermalink(req.params.permalinkid, function(result) {
+        res.end(result);
+    });
+});
+
+app.post('/dashpermalink', function(req, res) {
+    var tosend = req.body.query;
+    console.log(tosend);
+    permalink.savePermalink(req.body.query,
+        function(result, err) {
+            console.log("returning from new dash permalink", result);
+            if (err) {
+                res.status(500).end(err.message)
+            } else {
+                res.end(result.toString());
+            }
+        }
+    );
+});
+
 
 app.get('/config', function(req, res) {
     res.render('config', {layout: false});
