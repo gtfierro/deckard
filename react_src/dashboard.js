@@ -223,7 +223,7 @@ var Dashboard = React.createClass({
                             </div>
                             </ListGroupItem>
                             <PointList data={this.state.data}
-                                       showDetail={this.showDetail.bind(this)}
+                                       showDetail={this.showDetail}
                                        sortRowsLabel={this.state.sortRowsLabel}
                                        sortRowsAscending={this.state.sortRowsAscending}
                                        thresholds={this.state.thresholds} />
@@ -265,11 +265,14 @@ var PointList = React.createClass({
         }
         return false;
     },
+    showDetail: function(point) {
+        this.props.showDetail(point);
+    },
     render: function() {
         var self = this;
         var rows = _.map(this.props.data, function(point) {
             return (
-                <PointRow key={point.uuid} thresholds={self.props.thresholds} onClick={this.props.showDetail.bind(point) } {...point} />
+                <PointRow key={point.uuid} thresholds={self.props.thresholds} onClick={this.showDetail.bind(this, point) } {...point} />
             )
         }, this);
         if (this.props.sortRowsLabel != null) {
