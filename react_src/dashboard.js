@@ -275,7 +275,7 @@ var Dashboard = React.createClass({
 
 var PointRow = React.createClass({
     getInitialState: function() {
-        return {loading: false, plotDuration: 'hour'} // default 1 hour
+        return {loading: false, plotDuration: 'hour', color: "danger"} // default 1 hour
     },
     goToPlot: function() {
         console.log("get permalink for", this.props.uuid);
@@ -295,22 +295,23 @@ var PointRow = React.createClass({
     changeDuration: function(e) {
         this.setState({plotDuration: this.refs.plotDuration.getValue()});
     },
-    render: function() {
-        //console.log("props", this.props);
-        var color = 'danger';
+    componentDidMount: function() {
         if (this.props.latestTime != null) {
             var difference = moment().diff(this.props.latestTime, 'seconds');
 
             if (difference < this.props.thresholds.warning) {
-                color = "success";
+                this.setState({color: "success"});
             } else if (difference < this.props.thresholds.danger) {
-                color = "warning";
+                this.setState({color: "warning"});
             } else {
-                color = "danger";
+                this.setState({color: "danger"});
             }
         }
+    },
+    render: function() {
+        //console.log("props", this.props);
         return (
-        <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={color}>
+        <ListGroupItem href="#" onClick={this.props.onClick} bsStyle={this.state.color}>
             <div className="pointRow">
                 <div className="row">
                     <div className="col-md-4">
