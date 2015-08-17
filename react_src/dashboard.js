@@ -102,9 +102,6 @@ var Dashboard = React.createClass({
     showDetail: function(point) {
         this.setState({selected: point});
     },
-    toggleAnimateOnUpdate: function(e) {
-        this.setState({animateOnUpdate: e.target.checked});
-    },
     changeThreshold: function(e) {
         e.preventDefault();
         var thresholds = this.state.thresholds;
