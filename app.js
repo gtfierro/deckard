@@ -63,19 +63,15 @@ app.get('/config', function(req, res) {
 });
 
 app.post('/query', function(req, res) {
-    var view = config.view;
-    if (view.length == 0) {
-        view = "has uuid";
-    }
 
-    var query = "select * where " + view;
-    if (req.body.query.length > 0) {
-        query = "select * where " + req.body.query + " and " + view;
+    if (req.body.query.length == 0) {
+        res.json({});
     }
+    var query = "select * where " + req.body.query
     request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
         if (err) { return res.status(500).end('Error'); }
         if (remoteBody.length == 0) {
-            res.end({});
+            res.json({});
         }
         try {
             res.json(JSON.parse(remoteBody));
@@ -86,19 +82,14 @@ app.post('/query', function(req, res) {
 });
 
 app.post('/dataquery', function(req, res) {
-    var view = config.view;
-    if (view.length == 0) {
-        view = "has uuid";
+    if (req.body.query.length == 0) {
+        res.json({});
     }
-
-    var query = "select data before now as s where " + view;
-    if (req.body.query.length > 0) {
-        query = "select data before now as s where " + req.body.query + " and " + view;
-    }
+    var query = "select data before now as s where " + req.body.query;
     request.post({ url: config.httpArchiverUrl+ '/api/query', body: query }, function(err, remoteResponse, remoteBody) {
         if (err) { return res.status(500).end('Error'); }
         if (remoteBody.length == 0) {
-            res.end({});
+            res.json({});
         }
         try {
             res.json(JSON.parse(remoteBody));
@@ -154,10 +145,8 @@ io.on('connection', function (socket) {
             // on opening the websocket, send the query message
             wsconns[msg].on('open', function open() {
                 var sendmsg;
-                if (msg.length == 0) {
-                    sendmsg = config.view;
-                } else {
-                    sendmsg = msg + " and " + config.view;
+                if (msg.length > 0) {
+                    sendmsg = msg;
                 }
                 console.log("SUBSCRIBE TO", sendmsg);
                 wsconns[msg].send(sendmsg);
