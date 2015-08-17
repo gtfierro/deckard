@@ -10,21 +10,6 @@ var Dashboard = React.createClass({
                 }}
     },
     /*
-     * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
-     * we use the shouldComponentUpdate method to do an intelligent update. If a query has not yet been
-     * submitted, we return the default value of true. If a query *has* been submitted, then at the bottom of
-     * the submitQuery method, a timer is executed that sets the value of shouldComponentUpdate to true
-     * every second, so the entire component will only be updated then.
-     */
-    shouldComponentUpdate: function(nextState, nextProps) {
-        if (this.state.query == null) { return true; }
-        if (this.state.willUpdate) {
-            this.setState({willUpdate: false});
-            return true;
-        }
-        return false;
-    },
-    /*
      * Here we use React's immutable updates to give it some hints on how to update the full DOM
      */
     updateFromRepublish: function(newdata) {
@@ -47,7 +32,7 @@ var Dashboard = React.createClass({
         if (!permalink) { return; }
         permalink = permalink.slice(1,permalink.length);
         console.log("permalink?", permalink);
-        get_dash_permalink(permalink, 
+        get_dash_permalink(permalink,
             function(res) {
                 console.log("got permalink!", res);
                 //self.refs.queryInput.setValue(res.query);
@@ -117,9 +102,6 @@ var Dashboard = React.createClass({
             }
         });
         this.setState({socket: socket});
-        setInterval(function () {
-            self.setState({willUpdate: true});
-        }, 250);
     },
     showDetail: function(point) {
         this.setState({selected: point});
@@ -177,27 +159,7 @@ var Dashboard = React.createClass({
 
         // create the rows resulting from the points
         // thresholds is built off of the global threshold/color values
-        var rows = _.map(this.state.data, function(point) {
-            return (
-                <PointRow key={point.uuid} thresholds={this.state.thresholds} onClick={this.showDetail.bind(this, point)} {...point} />
-            )
-        }, this);
-
-        if (this.state.sortRowsLabel != null) {
-            rows = _.sortBy(rows, function(r) {
-                switch (self.state.sortRowsLabel) {
-                case "Path":
-                    return r.props.Path == null ? -Number.MIN_VALUE : r.props.Path
-                case "Value":
-                    return r.props.latestValue == null ? -Number.MIN_VALUE : r.props.latestValue
-                case "Time":
-                    return r.props.latestTime == null ? -Number.MIN_VALUE : r.props.latestTime
-                }
-            });
-            if (!this.state.sortRowsAscending) {
-                rows.reverse();
-            }
-        }
+        // Have a new selement specifically for this list and optimize that shouldComponentUpdate
 
         var savePermalinkButton = (
             <Button bsStyle="info" onClick={this.savePermalink}>Get Permalink!</Button>
@@ -260,13 +222,76 @@ var Dashboard = React.createClass({
                                 <div className="col-md-2"></div>
                             </div>
                             </ListGroupItem>
-                            {rows}
+                            <PointList data={this.state.data}
+                                       showDetail={this.showDetail}
+                                       sortRowsLabel={this.state.sortRowsLabel}
+                                       sortRowsAscending={this.state.sortRowsAscending}
+                                       thresholds={this.state.thresholds} />
                         </ListGroup>
                     </div>
                     <div className="col-md-4">
                         {detail}
                     </div>
                 </div>
+            </div>
+        );
+    }
+});
+
+
+var PointList = React.createClass({
+    getInitialState: function() {
+        return {willUpdate: true};
+    },
+    /*
+     * For large dashboards, maintaining a websocket/socket.io connection for each row is expensive. Instead,
+     * we use the shouldComponentUpdate method to do an intelligent update. If a query has not yet been
+     * submitted, we return the default value of true. If a query *has* been submitted, then at the bottom of
+     * the submitQuery method, a timer is executed that sets the value of shouldComponentUpdate to true
+     * every second, so the entire component will only be updated then.
+     */
+    componentDidMount: function() {
+        console.log("POINT LIST", this.props);
+        var self = this;
+        setInterval(function () {
+            self.setState({willUpdate: true});
+        }, 250);
+    },
+    shouldComponentUpdate: function(nextState, nextProps) {
+        //if (this.state.query == null) { return true; }
+        if (this.state.willUpdate) {
+            this.setState({willUpdate: false});
+            return true;
+        }
+        return false;
+    },
+    render: function() {
+        var self = this;
+        var rows = _.map(this.props.data, function(point) {
+            return (
+                <PointRow key={point.uuid} thresholds={self.props.thresholds} onClick={this.props.showDetail} {...point} />
+            )
+        }, this);
+        if (this.props.sortRowsLabel != null) {
+            rows = _.sortBy(rows, function(r) {
+                switch (self.props.sortRowsLabel) {
+                case "Path":
+                    return r.props.Path == null ? -Number.MIN_VALUE : r.props.Path
+                case "Value":
+                    return r.props.latestValue == null ? -Number.MIN_VALUE : r.props.latestValue
+                case "Time":
+                    return r.props.latestTime == null ? -Number.MIN_VALUE : r.props.latestTime
+                }
+            });
+            if (!this.props.sortRowsAscending) {
+                rows.reverse();
+            }
+        }
+
+
+        return (
+            <div className="pointList">
+                {rows}
             </div>
         );
     }
