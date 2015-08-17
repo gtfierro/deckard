@@ -255,7 +255,7 @@ var PointList = React.createClass({
         var self = this;
         setInterval(function () {
             self.setState({willUpdate: true});
-        }, 250);
+        }, 1000);
     },
     shouldComponentUpdate: function(nextState, nextProps) {
         //if (this.state.query == null) { return true; }
