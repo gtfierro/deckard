@@ -5,7 +5,7 @@ var Dashboard = React.createClass({
                 animateOnUpdate: false, sortRowsLabel: "Time", sortRowsAscending: false,
                 dashPermalink: null,
                 thresholds: {
-                    "warning": 30,
+                    "warning": 60,
                     "danger": 600
                 }}
     },
@@ -322,6 +322,19 @@ var PointRow = React.createClass({
     },
     changeDuration: function(e) {
         this.setState({plotDuration: this.refs.plotDuration.getValue()});
+    },
+    componentDidUpdate: function(prevProps) {
+        if ((this.props.latestTime != prevProps.latestTime) && (this.props.latestTime != null)) {
+            var difference = moment().diff(this.props.latestTime, 'seconds');
+
+            if (difference < this.props.thresholds.warning) {
+                this.setState({color: "success"});
+            } else if (difference < this.props.thresholds.danger) {
+                this.setState({color: "warning"});
+            } else {
+                this.setState({color: "danger"});
+            }
+        }
     },
     componentDidMount: function() {
         if (this.props.latestTime != null) {
