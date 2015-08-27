@@ -1,5 +1,8 @@
 var config = {};
 
+config.port = 3000;
+config.host = '0.0.0.0';
+
 // dashboard view
 config.view = '';
 
