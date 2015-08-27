@@ -8,12 +8,22 @@ var mongo = require('mongoskin');
 var db = mongo.db(config.mongohost);
 db.bind('permalinks');
 
+permalink.listPermalinks = function(done) {
+    db.permalinks.find().toArray(function(err, found) {
+        if (err) {
+            done(null, err);
+        } else {
+            done(found);
+        }
+    });
+}
+
 permalink.getPermalink = function(pid, deliver) {
     console.log(pid);
     db.permalinks.findById(pid, function(err, found) {
         console.log("found prev permalink?", found, err);
         if (err || !found) {
-            deliver(err);
+            deliver(null, err);
         } else {
             console.log("returning", found);
             deliver(found.query);

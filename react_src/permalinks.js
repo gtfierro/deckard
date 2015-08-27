@@ -1,16 +1,7 @@
-var queryURL = 'http://localhost:8079/api/query';
-
 var Deckard = React.createClass({
     mixins: [React.addons.LinkedStateMixin],
-    getInitialState: function() {
-        return {page: "dashboard"}
-    },
     componentDidMount: function() {
     },
-    //handleSelect(selectedKey) {
-    //    console.log('selected ' + selectedKey);
-    //    //this.setState({page: selectedKey});
-    //},
     render: function() {
         return (
             <div className="deckard">
@@ -47,7 +38,7 @@ var Deckard = React.createClass({
                     </Panel>
                 </div>
                 <div className='col-md-10'>
-                    <Dashboard />
+                    <PermalinkList />
                 </div>
             </div>
             </div>
@@ -55,7 +46,41 @@ var Deckard = React.createClass({
     }
 });
 
+var PermalinkList = React.createClass({
+    getInitialState: function() {
+        return {list: []}
+    },
+    componentWillMount: function() {
+        var self = this;
+        list_dash_permalinks(
+            function(result) {
+                self.setState({list: result});
+            },
+            function(err) {
+                console.error(err);
+            }
+        )
+    },
+    render: function() {
+        var rows = _.map(this.state.list, function(item) {
+            return (
+                <ListGroupItem href={"/index#"+item._id} key={item._id}>
+                    <p><Glyphicon glyph="chevron-right" /> {item.query}</p>
+                </ListGroupItem>
+            )
+        });
+        return (
+            <div className="permalinkList">
+                <h2>Permalinks</h2>
+                <ListGroup>
+                {rows}
+                </ListGroup>
+            </div>
+        );
+    }
+});
+
 React.render(
-    <Deckard page="dashboard" />,
+    <Deckard page="permalinks" />,
     document.getElementById('content')
 );

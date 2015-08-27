@@ -59,6 +59,16 @@ function get_permalink(uuid, duration, succ, err) {
     });
 }
 
+function list_dash_permalinks(succ, err) {
+    $.ajax({
+        url: '/dashpermalink/list',
+        datatype: 'json',
+        type: 'GET',
+        success: succ.bind(this),
+        error: err.bind(this)
+    });
+}
+
 // save dashboard as permalink
 function save_dash_permalink(query, succ, err) {
     $.ajax({
@@ -72,9 +82,9 @@ function save_dash_permalink(query, succ, err) {
 }
 
 function get_dash_permalink(pid, succ, err) {
-    console.log('/dashpermalink/'+pid);
+    console.log('/dashpermalink/get/'+pid);
     $.ajax({
-        url: '/dashpermalink/' + pid,
+        url: '/dashpermalink/get/' + pid,
         type: 'GET',
         success: succ.bind(this),
         error: err.bind(this)

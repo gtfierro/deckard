@@ -31,7 +31,21 @@ app.get('/index', function(req, res) {
     res.render('index', {layout: false});
 });
 
-app.get('/dashpermalink/:permalinkid', function(req, res) {
+app.get('/permalinks', function(req, res) {
+    res.render('permalinks', {layout: false});
+});
+
+app.get('/dashpermalink/list', function(req, res) {
+    permalink.listPermalinks(function(result, err) {
+        if (err) {
+            res.status(500).end(err.message);
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+app.get('/dashpermalink/get/:permalinkid', function(req, res) {
     if (!req.params.permalinkid) {
         res.render('index', {layout: false});
     }
